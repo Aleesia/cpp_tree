@@ -1,6 +1,7 @@
 //
 // Created by olga on 26.03.19.
 // nullptr, auto, foreach are not forbidden
+// C++11 is ok
 //
 
 #ifndef TREE_MOSKANOVA_TREE_H
@@ -34,6 +35,8 @@ public:
     // Children ops
     void add_child(const TreeNode<nodeType> &child);
     void add_child(TreeNode<nodeType> *child);
+    nodeType *get_children_data();
+    unsigned get_number_of_children();
 
     // Show section
 
@@ -69,6 +72,8 @@ TreeNode<nodeType>::~TreeNode() {
         }
         delete []children;
     }
+
+    parent = nullptr;
 }
 
 //================== DATA OPS ==================
@@ -165,6 +170,9 @@ void TreeNode<nodeType>::add_child(const TreeNode<nodeType> &child) {
         }
         new_children[number_of_children] = *child;
         number_of_children++;
+
+        delete[] children;
+        children = new_children;
     } else {
         number_of_children++;
         children = new TreeNode[number_of_children];
@@ -183,6 +191,9 @@ void TreeNode<nodeType>::add_child(TreeNode<nodeType> *child) {
         }
         new_children[number_of_children] = child; // hope this is pointer
         number_of_children++;
+
+        delete[] children;
+        children = new_children;
     } else {
         number_of_children++;
         children = new TreeNode *[number_of_children];
@@ -190,6 +201,20 @@ void TreeNode<nodeType>::add_child(TreeNode<nodeType> *child) {
     }
 
     child->parent = this;
+}
+
+template <typename nodeType>
+unsigned TreeNode<nodeType>::get_number_of_children() {
+    return number_of_children;
+}
+
+template <typename nodeType>
+nodeType* TreeNode<nodeType>::get_children_data() {
+    auto children_data = new nodeType[number_of_children]; // a pointer :)
+    for (int i = 0; i < number_of_children; i++) {
+        children_data[i] = children[i]->data;
+    }
+    return children_data;
 }
 
 #endif //TREE_MOSKANOVA_TREE_H
