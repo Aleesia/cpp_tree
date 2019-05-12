@@ -33,6 +33,7 @@ public:
 
     // Children ops
     void add_child(const TreeNode<nodeType> &child);
+    void add_child(TreeNode<nodeType> *child);
 
     // Show section
 
@@ -63,7 +64,7 @@ TreeNode<nodeType>::TreeNode() {
 template <typename nodeType>
 TreeNode<nodeType>::~TreeNode() {
     if (number_of_children > 0) {
-        for (int i = 0; i < number_of_children; ++i) {
+        for (int i = 0; i < number_of_children; i++) {
             delete children[i];
         }
         delete []children;
@@ -169,5 +170,26 @@ void TreeNode<nodeType>::add_child(const TreeNode<nodeType> &child) {
         children = new TreeNode[number_of_children];
         children[0] = *child;
     }
+
+    child.parent = this;
 }
+
+template <typename nodeType>
+void TreeNode<nodeType>::add_child(TreeNode<nodeType> *child) {
+    if (number_of_children > 0) {
+        auto new_children = new TreeNode<nodeType> *[number_of_children + 1];
+        for (int i = 0; i < number_of_children; ++i) {
+            new_children[i] = children[i];
+        }
+        new_children[number_of_children] = child; // hope this is pointer
+        number_of_children++;
+    } else {
+        number_of_children++;
+        children = new TreeNode *[number_of_children];
+        children[0] = child;
+    }
+
+    child->parent = this;
+}
+
 #endif //TREE_MOSKANOVA_TREE_H
