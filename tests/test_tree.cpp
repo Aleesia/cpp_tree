@@ -44,10 +44,12 @@ void create_projects_tree()
     str_child_12.add_child(&str_child_33);
     str_child_12.add_child(&str_child_34);
     str_root.output();
+    std::cout<<"depth of the projects tree: "<<str_root.get_depth()<<std::endl;
     std::cout<<std::endl;
 
     auto *copy_projects = str_child_11.copy_subtree();
     copy_projects->output();
+    std::cout<<"depth of the projects_C tree: "<<copy_projects->get_depth()<<std::endl;
 }
 
 int main()
@@ -68,6 +70,7 @@ int main()
     new_tree->add_child(&left_1);
     TreeNode<float> middle(33);
     new_tree->add_child(&middle);
+    middle.add_child(new_tree);
     new_tree->output();
 
     std::cout<<"\n\n";
@@ -80,7 +83,7 @@ int main()
 
      test_node = root->copy_subtree();
      test_node->output();
-     std:cout<<std::endl;
-
+     std:cout<<"depth of root"<<root->get_depth()<<std::endl;
      create_projects_tree();
+
 }
