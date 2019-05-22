@@ -8,25 +8,28 @@
 using namespace std;
 
 int main(){
-    TreeNode<int> root;
-    root.set_data(17);
+//    TreeNode<int> root;
+    auto *root = new TreeNode<int >(17);
+//    root.set_data(17);
 
-    cout << root.get_data();
+    cout << root->get_data() << endl;
 
 
-    TreeNode<int> first_child(13), second_child(15);
+    auto *first_child = new TreeNode<int>(13);
+    auto *second_child = new TreeNode<int>(15);
 
-    root.add_child(&first_child);
-    root.add_child(&second_child);
+    root->add_child(first_child);
+    root->add_child(second_child);
 
-    int *children_data = root.get_children_data();
-    for (int i = 0; i < root.get_number_of_children(); i++) {
-        cout << children_data[i];
+    int *children_data = root->get_children_data();
+    int n_children = root->get_number_of_children();
+    for (int i = 0; i < n_children; i++) {
+        cout << children_data[i] << " ";
     }
 
     delete[] children_data;
 
-    delete &root;
+    delete root;
 
     return 0;
 }
