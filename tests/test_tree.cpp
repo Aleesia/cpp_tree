@@ -13,13 +13,20 @@ int main(){
 
     cout << root.get_data();
 
-//    auto *root = new TreeNode<int>(17);
 
-//    auto *first_child = new TreeNode<int>(11);
+    TreeNode<int> first_child(13), second_child(15);
 
-//    root.add_child(&first_child);
+    root.add_child(&first_child);
+    root.add_child(&second_child);
 
-//    delete first_child;
+    int *children_data = root.get_children_data();
+    for (int i = 0; i < root.get_number_of_children(); i++) {
+        cout << children_data[i];
+    }
+
+    delete[] children_data;
+
+    delete &root;
 
     return 0;
 }
