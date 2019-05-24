@@ -84,6 +84,7 @@ int main()
      test_node = root->copy_subtree();
      test_node->output();
      std:cout<<"depth of root"<<root->get_depth()<<std::endl;
-     create_projects_tree();
+     middle.add_child(new_tree);
+     //create_projects_tree();
 
 }

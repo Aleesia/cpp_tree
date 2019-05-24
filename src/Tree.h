@@ -40,8 +40,8 @@ public:
     nodeType get_parent_data();
     nodeType* get_parents_data();
 
-    unsigned get_depth();
-    unsigned get_tree_depth();
+    virtual unsigned get_depth();
+    virtual unsigned get_tree_depth();
 
     TreeNode* get_root();
 
@@ -51,11 +51,11 @@ public:
     virtual nodeType *get_children_data();
     unsigned get_number_of_children();
 
-    virtual void output();                       //alisa func
+    virtual void output();
     void remove_child(TreeNode<nodeType> *child);            //doesn't delete the child
 
-    virtual TreeNode<nodeType> *copy();          //alisa func
-    virtual TreeNode<nodeType> *copy_subtree();  //alisa func
+    virtual TreeNode<nodeType> *copy();
+    virtual TreeNode<nodeType> *copy_subtree();
 
     // Show section
 
@@ -107,13 +107,15 @@ TreeNode<nodeType>::~TreeNode()
 }
 
 //================== NODE COPY =================
-template<typename nodeType>               //alisa func
+template<typename nodeType>
 TreeNode<nodeType>::TreeNode(const TreeNode<nodeType> &node)
 {
     this->data = node.data;
     this->number_of_children = 0;
     this->parent = node.parent;
+    this->parent->add_child(this);
     this->children = nullptr;
+    this->number_of_children = 0;
 }
 //================== DATA OPS ==================
 
@@ -283,12 +285,17 @@ nodeType* TreeNode<nodeType>::get_children_data() {
 }
 
 
-//============= MELEKESTSEVA'S CODING ==============
+//========== ==============
 
 
 template<typename nodeType>
 bool TreeNode<nodeType>::is_the_same(TreeNode<nodeType> *other)
 {
+    std::string rez;
+    if (this==other) {rez="YES";}
+    else {rez="NO";}
+
+    std::cout<<"is_the_same: "<<rez<<"  "<<this<<"  "<<other<<std::endl;
     return (this == other);
 }
 
@@ -347,13 +354,9 @@ TreeNode<nodeType>* TreeNode<nodeType>::get_root()
 }
 
 template<typename nodeType>
-bool TreeNode<nodeType>::is_in_tree(TreeNode<nodeType> *node)
+bool TreeNode<nodeType>::is_in_tree(TreeNode<nodeType> *other)
 {
-    auto *root_1 = new TreeNode<nodeType>;
-    auto *root_2 = new TreeNode<nodeType>;
-    root_1 = this->get_root();
-    root_2 = node->get_root();
-    return (root_1->is_the_same(root_2));
+    return (this->get_root()->is_the_same(other->get_root()));
 }
 
 template<typename nodeType>
@@ -384,7 +387,7 @@ void TreeNode<nodeType>::output()
 template<typename nodeType>
 TreeNode<nodeType> *TreeNode<nodeType>::copy()
 {
-    TreeNode<nodeType>* new_node = new TreeNode<nodeType>;
+    auto* new_node = new TreeNode<nodeType>;
     new_node->data = data;
     if (parent==nullptr) {new_node->parent = nullptr;}
     else
@@ -399,7 +402,7 @@ TreeNode<nodeType> *TreeNode<nodeType>::copy()
 template<typename nodeType>
 TreeNode<nodeType>* TreeNode<nodeType>::recursive_copy_subtree(TreeNode<nodeType> *copy_of_parent_node)
 {
-    TreeNode<nodeType> *node_copy = new TreeNode<nodeType>;
+    auto *node_copy = new TreeNode<nodeType>;
     node_copy->data = this->data;
     node_copy->parent = copy_of_parent_node;
     node_copy->number_of_children = this->number_of_children;
@@ -415,9 +418,9 @@ TreeNode<nodeType>* TreeNode<nodeType>::recursive_copy_subtree(TreeNode<nodeType
 }
 
 template<typename nodeType>
-TreeNode<nodeType> *TreeNode<nodeType>::copy_subtree() //this does NOT work:( SIGSEGV
+TreeNode<nodeType> *TreeNode<nodeType>::copy_subtree()
 {
-    TreeNode<nodeType> *new_node = new TreeNode<nodeType>;
+    auto *new_node = new TreeNode<nodeType>;
     new_node->data = data;
     new_node->parent = NULL;
     new_node->number_of_children = number_of_children;
@@ -443,13 +446,13 @@ unsigned TreeNode<nodeType>::get_depth()
     return recursive_get_depth(cur);
 }
 
-unsigned my_max(unsigned* arr, unsigned len)
+unsigned my_max(unsigned* ar, unsigned len)
 {
     unsigned maxi=0;
     for (int i=0; i<len; i++)
     {
-        if (arr[i]>maxi)
-        {maxi = arr[i];}
+        if (ar[i]>maxi)
+        {maxi = ar[i];}
     }
     return maxi;
 }
@@ -459,7 +462,7 @@ unsigned TreeNode<nodeType>::recursive_get_depth(unsigned cur)
 {
     if (number_of_children)
     {
-        unsigned *depths = new unsigned[number_of_children];
+        auto *depths = new unsigned[number_of_children];
         for (unsigned i=0; i<number_of_children; i++)
         {
             depths[i] = children[i]->recursive_get_depth(cur+1);
@@ -471,4 +474,11 @@ unsigned TreeNode<nodeType>::recursive_get_depth(unsigned cur)
         return cur;
     }
 }
+
+template<typename nodeType>
+unsigned TreeNode<nodeType>::get_tree_depth()
+{
+    return (this->get_root()->get_depth());
+}
+
 #endif //TREE_MOSKANOVA_TREE_H
