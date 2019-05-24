@@ -18,6 +18,11 @@ class TreeNode{
 
 public:
     explicit TreeNode(nodeType node_data);
+
+    //copy constructor can copy just node data or including whole subtree.
+    // you can also copy parent pointer
+    explicit TreeNode(TreeNode<nodeType> *node, bool child_free = false, bool save_parent = false);
+
     TreeNode();
     ~TreeNode();
 
@@ -60,6 +65,29 @@ TreeNode<nodeType>::TreeNode() {
     children = nullptr;
     parent = nullptr;
     number_of_children = 0;
+}
+
+template <typename nodeType>
+TreeNode<nodeType>::TreeNode(TreeNode<nodeType> *node, bool child_free, bool save_parent) {
+
+    data = node->data;
+
+    if (save_parent) {
+        parent = node->parent;
+    } else {
+        parent = nullptr;
+    }
+
+    if (child_free or node->number_of_children == 0) {
+        number_of_children = 0;
+        children = nullptr;
+    } else {
+        number_of_children = node->number_of_children;
+        children = new TreeNode<nodeType> *[number_of_children];
+        for (int i = 0; i < number_of_children; i++) {
+            children[i] = new TreeNode<nodeType>(node->children[i]);
+        }
+    }
 }
 
 //============== NODE DESTRUCTOR ===============

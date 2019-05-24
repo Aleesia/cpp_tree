@@ -8,9 +8,7 @@
 using namespace std;
 
 int main(){
-//    TreeNode<int> root;
     auto *root = new TreeNode<int >(17);
-//    root.set_data(17);
 
     cout << root->get_data() << endl;
 
