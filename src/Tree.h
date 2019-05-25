@@ -7,8 +7,6 @@
 #ifndef TREE_MOSKANOVA_TREE_H
 #define TREE_MOSKANOVA_TREE_H
 
-#define MAX_TREE_DEPTH 50
-
 template<typename nodeType>
 class TreeNode{
     nodeType data;
@@ -16,11 +14,15 @@ class TreeNode{
     TreeNode** children;
     unsigned number_of_children;
 
+    unsigned number_of_parents;
+
 public:
     explicit TreeNode(nodeType node_data);
 
     //copy constructor can copy just node data or including whole subtree.
     // you can also copy parent pointer
+    // todo swap params by default to the implementation
+    // oh well, i can't do that.
     explicit TreeNode(TreeNode<nodeType> *node, bool child_free = false, bool save_parent = false);
 
     TreeNode();
@@ -33,9 +35,11 @@ public:
     // Parent ops
     TreeNode* get_parent();
     void set_parent(const TreeNode<nodeType> &new_parent);
+    void del_parent();
     TreeNode** get_parents(); // full list of parents
     nodeType get_parent_data();
     nodeType* get_parents_data();
+    unsigned get_number_of_parents();
 
     // Children ops
     void add_child(const TreeNode<nodeType> &child);
@@ -57,6 +61,7 @@ TreeNode<nodeType>::TreeNode(nodeType node_data) {
     parent = nullptr;
     children = nullptr;
     number_of_children = 0;
+    number_of_parents = 0;
 }
 
 template <typename nodeType>
@@ -65,6 +70,7 @@ TreeNode<nodeType>::TreeNode() {
     children = nullptr;
     parent = nullptr;
     number_of_children = 0;
+    number_of_parents = 0;
 }
 
 template <typename nodeType>
@@ -74,8 +80,10 @@ TreeNode<nodeType>::TreeNode(TreeNode<nodeType> *node, bool child_free, bool sav
 
     if (save_parent) {
         parent = node->parent;
+        number_of_parents = node->number_of_parents;
     } else {
         parent = nullptr;
+        number_of_parents = 0;
     }
 
     if (child_free or node->number_of_children == 0) {
@@ -119,6 +127,11 @@ void TreeNode<nodeType>::set_data(nodeType new_data) {
 //================= PARENT OPS =================
 
 template <typename nodeType>
+unsigned TreeNode<nodeType>::get_number_of_parents() {
+    return number_of_parents;
+}
+
+template <typename nodeType>
 TreeNode<nodeType>* TreeNode<nodeType>::get_parent() {
     return parent;
 }
@@ -126,6 +139,13 @@ TreeNode<nodeType>* TreeNode<nodeType>::get_parent() {
 template <typename nodeType>
 void TreeNode<nodeType>::set_parent(const TreeNode<nodeType> &new_parent) {
     parent = *new_parent;
+    number_of_parents = new_parent.number_of_parents + 1;
+}
+
+template <typename nodeType>
+void TreeNode<nodeType>::del_parent() {
+    parent = nullptr;
+    number_of_parents = 0;
 }
 
 template <typename nodeType>
@@ -135,24 +155,15 @@ TreeNode<nodeType>** TreeNode<nodeType>::get_parents() {
     }
 
     TreeNode<nodeType>** parents;
-    parents = new TreeNode<nodeType>*[MAX_TREE_DEPTH];
+    parents = new TreeNode<nodeType>*[number_of_parents];
 
-    unsigned parents_len = 0;
     TreeNode<nodeType>* currentNode = this;
-    while (currentNode->parent != nullptr) {
-        parents_len++;
+    for (int i = 0; i < number_of_parents; ++i) {
         currentNode = this->parent;
-
-        parents[parents_len - 1] = currentNode;
+        parents[i] = currentNode;
     }
 
-    TreeNode<nodeType> **parents1 = new TreeNode<nodeType>[parents_len];
-    for (int i = 0; i < parents_len; ++i) {
-        parents1[i] = parents[i]; //todo hope this works
-    }
-    delete[] parents;
-
-    return parents1;
+    return parents;
 }
 
 template <typename nodeType>
@@ -167,24 +178,15 @@ nodeType* TreeNode<nodeType>::get_parents_data() {
     }
 
     nodeType* parents_data;
-    parents_data = new nodeType[MAX_TREE_DEPTH];
+    parents_data = new nodeType[number_of_parents];
 
-    unsigned parents_len = 0;
     TreeNode<nodeType>* currentNode = this;
-    while (currentNode->parent != nullptr) {
-        parents_len++;
+    for (int i = 0; i < number_of_parents; ++i) {
         currentNode = this->parent;
-
-        parents_data[parents_len - 1] = currentNode->data;
+        parents_data[i] = currentNode->data;
     }
 
-    auto parents_data1 = new nodeType[parents_len];
-    for (int i = 0; i < parents_len; ++i) {
-        parents_data1[i] = parents_data[i]; //todo hope this works
-    }
-    delete[] parents_data;
-
-    return parents_data1;
+    return parents_data;
 }
 
 //================ CHILDREN OPS ================
@@ -208,6 +210,7 @@ void TreeNode<nodeType>::add_child(const TreeNode<nodeType> &child) {
     }
 
     child.parent = this;
+    child.number_of_parents = number_of_parents + 1;
 }
 
 template <typename nodeType>
@@ -229,6 +232,7 @@ void TreeNode<nodeType>::add_child(TreeNode<nodeType> *child) {
     }
 
     child->parent = this;
+    child->number_of_parents = number_of_parents + 1;
 }
 
 template <typename nodeType>
