@@ -7,6 +7,9 @@
 #ifndef TREE_MOSKANOVA_TREE_H
 #define TREE_MOSKANOVA_TREE_H
 
+#include <iostream>
+#include <fstream>
+
 template<typename nodeType>
 class TreeNode{
     nodeType data;
@@ -31,31 +34,43 @@ public:
     // Node data ops
     nodeType get_data();
     void set_data(nodeType new_data);
-    unsigned get_depth();
-
     // Parent ops
     TreeNode* get_parent();
+
     void set_parent(const TreeNode<nodeType> &new_parent);
     void remove_parent();
     TreeNode** get_parents(); // full list of parents
     nodeType get_parent_data();
     nodeType* get_parents_data();
     unsigned get_number_of_parents();
-
     // Children ops
     void add_child(const TreeNode<nodeType> &child);
+
     void add_child(TreeNode<nodeType> *child);
     nodeType *get_children_data();
     unsigned get_number_of_children();
     void remove_child(TreeNode<nodeType> *child);
 
-    // Show section
+
+    // Output section
+    unsigned get_depth();
+
+    // for (sub)tree
+    void show_adjacency_matrix(); // console
+    void show_adjacency_matrix(char *filename);
+    void show_adjacency_list(); // console
+    void show_adjacency_list(char *filename);
+    // for node only
+    template <typename NodeType>
+    friend std::ostream &operator<<(std::ostream &cout, TreeNode<NodeType> *node);
 
 //    void show(); // shows node data & stuff
 protected:
     // this function is used when we operate with children/parents
     // Then we need to update information about all parents' depth
     void update_depth();
+    // this is hidden recursion
+    void show_adjacency_list(bool root);
 };
 
 
@@ -296,6 +311,68 @@ void TreeNode<nodeType>::remove_child(TreeNode<nodeType> *child) {
             child->remove_parent(); // genius ;]
         }
     }
+}
+
+//================ OUTPUT SECTION ================
+
+template <typename nodeType>
+void TreeNode<nodeType>::show_adjacency_list() {
+    show_adjacency_list(true);
+}
+
+template <typename nodeType>
+void TreeNode<nodeType>::show_adjacency_list(bool root) {
+    // for this node
+    if (root) {
+        std::cout << data << ": (";
+    } else {
+        std::cout << data << ": ("
+                  << parent->data << ", ";
+    }
+    for (int i = 0; i < number_of_children; ++i) {
+        std::cout << children[i]->data << ", ";
+    }
+    std::cout << ")" << std::endl;
+
+    // for children
+    for (int i = 0; i < number_of_children; ++i) {
+        children[i]->show_adjacency_list(false);
+    }
+}
+
+template <typename nodeType>
+void TreeNode<nodeType>::show_adjacency_list(char *filename) {
+
+}
+
+template <typename NodeType>
+std::ostream &operator<<(std::ostream &cout, TreeNode<NodeType> *node) {
+    cout << "node " << node->data << "\n"
+         << "parent node ";
+    if (node->parent == nullptr){
+        cout << "does not exist";
+    } else  {
+        cout << node->parent->data;
+    }
+    cout << "\n" << "children nodes: ";
+    if (node->number_of_children == 0) {
+        cout << "do not exist";
+    } else {
+        cout << "\n";
+        for (int i = 0; i < node->number_of_children; ++i) {
+            cout << node->children[i]->data << ", ";
+        }
+    }
+}
+
+template <typename nodeType>
+void TreeNode<nodeType>::show_adjacency_matrix() {
+
+}
+
+template <typename nodeType>
+void TreeNode<nodeType>::show_adjacency_matrix(char *filename) {
+
 }
 
 //=============== OTHER STUFF ==================

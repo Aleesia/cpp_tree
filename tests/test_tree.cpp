@@ -43,9 +43,17 @@ int main(){
     cout << "test depth:"
          << root->get_depth() << endl;
 
+    //test adjacency list
+    cout << "test adjacency list" << endl;
+    root->show_adjacency_list();
+
+    // test cout for node
+    cout << "test cout for node" << endl;
+    cout << root;
+
     // test remove_parent
     third_child->remove_parent();
-    cout << "test remove_parent:" << endl
+    cout << "\ntest remove_parent:" << endl
          << "+number_of_children for parent:"
          << second_child->get_number_of_children() << endl
          << "+is the number of children nullptr:"
