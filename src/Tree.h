@@ -405,6 +405,7 @@ std::ostream &operator<<(std::ostream &cout, TreeNode<NodeType> *node) {
             cout << node->children[i]->data << ", ";
         }
     }
+    return cout;
 }
 
 template <typename nodeType>
