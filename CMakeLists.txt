@@ -7,9 +7,14 @@ set(CMAKE_CXX_STANDARD 11)
 include_directories(BEFORE src)
 include_directories(BEFORE tests)
 
-add_library(Tree       MODULE src/Tree.h         src/Tree.cpp)
+add_library(TreeError  MODULE src/TreeError.h src/TreeError.cpp)
+
+add_library(Tree       MODULE src/TreeError.h src/TreeError.cpp src/Tree.h         src/Tree.cpp     src/TreeError.h src/TreeError.cpp)
 add_library(BinaryTree STATIC src/BinaryTree.cpp src/BinaryTree.h)
 add_library(PrefixTree STATIC src/PrefixTree.cpp src/PrefixTree.h)
+
+#add_dependencies(Tree TreeError)
+#target_link_libraries(Tree PUBLIC TreeError)
 
 add_executable(test_tree tests/test_tree.cpp)
 

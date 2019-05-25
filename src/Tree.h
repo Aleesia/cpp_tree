@@ -7,6 +7,7 @@
 #ifndef TREE_MOSKANOVA_TREE_H
 #define TREE_MOSKANOVA_TREE_H
 
+#include "TreeError.h"
 #include <iostream>
 #include <fstream>
 
@@ -59,18 +60,18 @@ public:
     void show_adjacency_matrix(); // console
     void show_adjacency_matrix(char *filename);
     void show_adjacency_list(); // console
-    void show_adjacency_list(char *filename);
+    void show_adjacency_list(const char *filename);
     // for node only
     template <typename NodeType>
     friend std::ostream &operator<<(std::ostream &cout, TreeNode<NodeType> *node);
 
-//    void show(); // shows node data & stuff
 protected:
     // this function is used when we operate with children/parents
     // Then we need to update information about all parents' depth
     void update_depth();
     // this is hidden recursion
     void show_adjacency_list(bool root);
+    void show_adjacency_list(bool root, const char* filename);
 };
 
 
@@ -341,7 +342,48 @@ void TreeNode<nodeType>::show_adjacency_list(bool root) {
 }
 
 template <typename nodeType>
-void TreeNode<nodeType>::show_adjacency_list(char *filename) {
+void TreeNode<nodeType>::show_adjacency_list(const char *filename) {
+    show_adjacency_list(true, filename);
+}
+
+template <typename nodeType>
+void TreeNode<nodeType>::show_adjacency_list(bool root, const char *filename) {
+    try {
+        std::fstream fstream(filename, std::ios::out | std::ios::app);
+
+        if (!fstream) throw TreeError(1);
+
+        // for this node
+        if (root) {
+//            std::fstream fstream(filename, std::ios::out);
+
+//            if (!fstream) throw TreeError(1);
+
+            fstream << data << ": (";
+            fstream.seekg(std::ios_base::beg);
+        } else {
+//            std::fstream fstream(filename, std::ios::app);
+
+//            if (!fstream) throw TreeError(1);
+
+            fstream.seekg(std::ios_base::end);
+            fstream << data << ": ("
+                    << parent->data << ", ";
+        }
+        for (int i = 0; i < number_of_children; ++i) {
+            fstream << children[i]->data << ", ";
+        }
+        fstream << ")" << std::endl;
+        fstream.close();
+
+        // for children
+        for (int i = 0; i < number_of_children; ++i) {
+            children[i]->show_adjacency_list(false, filename);
+        }
+    } catch (TreeError &treeError) {
+//        treeError.Message();
+        std::cout << "oops";
+    }
 
 }
 

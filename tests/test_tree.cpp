@@ -46,6 +46,8 @@ int main(){
     //test adjacency list
     cout << "test adjacency list" << endl;
     root->show_adjacency_list();
+    //test adjacency list for file
+    root->show_adjacency_list("/home/olga/Projects/Tree_Moskanova/tests/adjacency.txt");
 
     // test cout for node
     cout << "test cout for node" << endl;
