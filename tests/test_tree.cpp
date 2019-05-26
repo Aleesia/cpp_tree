@@ -47,9 +47,13 @@ void create_projects_tree()
     std::cout<<"depth of the projects tree: "<<str_root.get_depth()<<std::endl;
     std::cout<<std::endl;
 
+    str_root.show_adjacency_matrix();
+
     auto *copy_projects = str_child_11.copy_subtree();
     copy_projects->output();
     std::cout<<"depth of the projects_C tree: "<<copy_projects->get_depth()<<std::endl;
+
+
 }
 
 int main()
@@ -58,6 +62,9 @@ int main()
     TreeNode<float> ch(1);
     root->add_child(&ch);
     TreeNode<float> ch_1(22);
+    std::cout<<"======";
+    std::cout<<root;
+    //std::cout<<ch_1;
     ch.add_child(&ch_1);
     TreeNode<float> ch_3(44);
     TreeNode<float> ch_5(55);
@@ -80,11 +87,13 @@ int main()
 
      new_tree->output();
      std::cout<<std::endl;
-
      test_node = root->copy_subtree();
-     test_node->output();
+     //test_node->output();
      std:cout<<"depth of root"<<root->get_depth()<<std::endl;
      middle.add_child(new_tree);
-     //create_projects_tree();
-
+     create_projects_tree();
+     new_tree->output();
+     std::cout<<"\n====================================================================\n";
+     new_tree->show_adjacency_matrix();
+     new_tree->output();
 }

@@ -1,13 +1,18 @@
 #ifndef TREE_MOSKANOVA_TREE_H
 #define TREE_MOSKANOVA_TREE_H
 
+#include"TreeError.h"
+#include<fstream>
+#include<ostream>
 #include<iostream>
+#include<iomanip>
 #include<cstring>
 #include<string.h>
 #include<typeinfo>
 #define MAX_TREE_DEPTH 50
 #define STR_LEN 50
 #define OUTPUT_STR "        "
+#define WIDTH 6
 
 template<typename nodeType>
 class TreeNode{
@@ -23,6 +28,12 @@ private:
 
     bool is_in_tree(TreeNode<nodeType> *other);
     bool is_the_same(TreeNode<nodeType> *other);
+
+    unsigned get_number_of_all_children();
+protected:
+    // this is hidden recursion
+    void show_adjacency_list(bool root);
+    void show_adjacency_list(bool root, const char* filename);
 public:
     explicit TreeNode(nodeType node_data);
 
@@ -41,6 +52,16 @@ public:
 
     void del_parent();
 
+    //OUTPUT SECTION
+    // for (sub)tree
+    void show_adjacency_matrix(); // console
+    void show_adjacency_matrix(char *filename);
+    void show_adjacency_list(); // console
+    void show_adjacency_list(const char *filename);
+    // for node only
+    template <typename NodeType>
+    friend std::ostream &operator<<(std::ostream &cout, TreeNode<NodeType> *node);
+
     TreeNode** get_parents(); // full list of parents
     nodeType get_parent_data();
     nodeType* get_parents_data();
@@ -58,6 +79,8 @@ public:
     unsigned get_number_of_children();
 
     TreeNode<nodeType>** get_children();
+
+    TreeNode<nodeType>** get_all_children_and_this();
 
     void output();
     void remove_child(TreeNode<nodeType> *child);            //doesn't delete the child
@@ -319,11 +342,6 @@ TreeNode<nodeType>** TreeNode<nodeType>::get_children()
 template<typename nodeType>
 bool TreeNode<nodeType>::is_the_same(TreeNode<nodeType> *other)
 {
-    std::string rez;
-    if (this==other) {rez="YES";}
-    else {rez="NO";}
-
-    std::cout<<"is_the_same: "<<rez<<"  "<<this<<"  "<<other<<std::endl;
     return (this == other);
 }
 
@@ -371,7 +389,7 @@ void TreeNode<nodeType>::remove_child(TreeNode<nodeType> *child)
 template<typename nodeType>
 TreeNode<nodeType>* TreeNode<nodeType>::get_root()
 {
-    if (parent==nullptr)
+    if (this->parent==nullptr)
     {
         return this;
     }
@@ -522,5 +540,233 @@ void TreeNode<nodeType>::delete_this_node()
             p->add_child(children[i]);
         }
     }
+}
+
+//================ OUTPUT SECTION ================
+
+template <typename nodeType>
+void TreeNode<nodeType>::show_adjacency_list() {
+    show_adjacency_list(true);
+}
+
+template <typename nodeType>
+void TreeNode<nodeType>::show_adjacency_list(bool root) {
+    // for this node
+    if (root) {
+        std::cout << data << ": (";
+    } else {
+        std::cout << data << ": ("
+                  << parent->data << ", ";
+    }
+    for (int i = 0; i < number_of_children; ++i) {
+        std::cout << children[i]->data << ", ";
+    }
+    std::cout << ")" << std::endl;
+
+    // for children
+    for (int i = 0; i < number_of_children; ++i) {
+        children[i]->show_adjacency_list(false);
+    }
+}
+
+template <typename nodeType>
+void TreeNode<nodeType>::show_adjacency_list(const char *filename) {
+    show_adjacency_list(true, filename);
+}
+
+template <typename nodeType>
+void TreeNode<nodeType>::show_adjacency_list(bool root, const char *filename) {
+    try {
+        std::fstream fstream(filename, std::ios::out | std::ios::app);
+
+        if (!fstream) throw TreeError(1);
+
+        // for this node
+        if (root) {
+//            std::fstream fstream(filename, std::ios::out);
+
+//            if (!fstream) throw TreeError(1);
+
+            fstream << data << ": (";
+            fstream.seekg(std::ios_base::beg);
+        } else {
+//            std::fstream fstream(filename, std::ios::app);
+
+//            if (!fstream) throw TreeError(1);
+
+            fstream.seekg(std::ios_base::end);
+            fstream << data << ": ("
+                    << parent->data << ", ";
+        }
+        for (int i = 0; i < number_of_children; ++i) {
+            fstream << children[i]->data << ", ";
+        }
+        fstream << ")" << std::endl;
+        fstream.close();
+
+        // for children
+        for (int i = 0; i < number_of_children; ++i) {
+            children[i]->show_adjacency_list(false, filename);
+        }
+    } catch (TreeError &treeError) {
+//        treeError.Message();
+        std::cout << "oops";
+    }
+
+}
+
+template <typename NodeType>
+std::ostream &operator<<(std::ostream &cout, TreeNode<NodeType> *node) {
+
+    cout << "node " << node->data << "\n"<< "parent node ";
+    if (node->parent == nullptr){
+        cout << "does not exist";
+    } else  {
+        cout << node->parent->data;
+    }
+    cout << "\n" << "children nodes: ";
+    if (node->number_of_children == 0) {
+        cout << "do not exist";
+    } else {
+        cout << "\n";
+        for (int i = 0; i < node->number_of_children; ++i) {
+            cout << node->children[i]->data << ", ";
+        }
+    }
+    return cout;
+}
+
+template<typename nodeType>
+unsigned TreeNode<nodeType>::get_number_of_all_children()
+{
+    if (number_of_children==0) {return 0;}
+    unsigned rez=number_of_children;
+    for (unsigned k=0; k<number_of_children;k++)
+    {
+        rez+=children[k]->get_number_of_all_children();
+    }
+    return rez;
+}
+
+template<typename nodeType>
+TreeNode<nodeType>** TreeNode<nodeType>::get_all_children_and_this()
+{
+    unsigned number=get_number_of_all_children();
+    TreeNode<nodeType> **the_list = new TreeNode<nodeType>* [number+1];
+    TreeNode<nodeType> **next_1 = new TreeNode<nodeType>* [number+1];
+    TreeNode<nodeType> **next_2 = new TreeNode<nodeType>* [number+1];
+    unsigned i, j, k, counter=1;
+    for (i=0; i<number; i++)
+    {
+        the_list[i] = nullptr;
+        next_1[i] = nullptr;
+        next_2[i] = nullptr;
+    }
+    TreeNode<nodeType> *test_node=this->copy_subtree();
+    the_list[0]=test_node;
+    unsigned next_1_cur_num = test_node->get_number_of_children(), next_2_cur_num=0;
+    next_1 = test_node->get_children();
+    while (counter<number)
+    {
+        unsigned f=0;
+
+        for (j=0; j<next_1_cur_num; j++)
+        {
+            the_list[counter]=next_1[j];
+            counter++;
+            for (k=0; k<next_1[j]->get_number_of_children(); k++)
+            {
+                next_2[f]=next_1[j]->get_children()[k];
+                f++;
+            }
+            next_2_cur_num+=next_1[j]->get_number_of_children();
+        }
+        f=0;
+        next_1_cur_num=0;
+        for (j=0; j<next_2_cur_num; j++)
+        {
+            the_list[counter] = next_2[j];
+            counter++;
+            for (k=0; k<next_2[j]->get_number_of_children(); k++)
+            {
+                next_1[f]=next_2[j]->get_children()[k];
+                f++;
+            }
+            next_1_cur_num+=next_2[j]->get_number_of_children();
+        }
+    }
+    delete [] next_1;
+    delete [] next_2;
+    return the_list;
+}
+
+template <typename nodeType>
+void TreeNode<nodeType>::show_adjacency_matrix() {
+    unsigned num = get_number_of_all_children()+1;
+    TreeNode<nodeType> **pointers = get_all_children_and_this();
+    std::cout<<std::setw(WIDTH)<<std::setfill(' ')<<"";
+    if (typeid(nodeType).name() == typeid(std::string).name())
+    {
+        std::string great_data;
+        for (unsigned k=0; k<num; k++){
+            great_data = pointers[k]->get_data();
+            if (great_data.length()>WIDTH-1)
+            {
+                std::cout<<' ';
+                for (unsigned q=0; q<WIDTH-1; q++) {std::cout<<great_data[q];}
+            }
+            else
+            {
+                for (unsigned q=great_data.length(); q<WIDTH; q++)
+                {std::cout<<' ';}
+                std::cout<<great_data;
+            }
+        }
+    }
+    else
+    {
+        for (unsigned k=0; k<num; k++){
+            std::cout<<std::setw(WIDTH)<<std::setfill(' ')<<pointers[k]->get_data();}
+    }
+
+    std::cout<<'\n';
+    for (unsigned i=0; i<num; i++)
+    {
+        if (typeid(nodeType).name() == typeid(std::string).name())
+        {
+            std::string great_data;
+            great_data = pointers[i]->get_data();
+            unsigned l = great_data.length();
+            if (l>WIDTH-1)
+            {
+                std::cout<<' ';
+                for (unsigned q=0; q<WIDTH-1; q++) {std::cout<<great_data[q];}
+
+            }
+            else
+            {
+                for (unsigned q=l; q<WIDTH; q++)
+                {std::cout<<' ';}
+                std::cout<<great_data;
+            }
+        }
+        else
+        {
+            std::cout<<std::setw(WIDTH)<<std::setfill(' ')<<pointers[i]->data;
+        }
+        for (unsigned j=0; j<num; j++)
+        {
+            if (pointers[i]->parent==pointers[j]){
+                std::cout<<std::setw(WIDTH)<<std::setfill(' ')<<1;}
+            else{
+                std::cout<<std::setw(WIDTH)<<std::setfill(' ')<<0;}
+        }
+        std::cout<<std::endl;
+    }
+}
+
+template <typename nodeType>
+void TreeNode<nodeType>::show_adjacency_matrix(char *filename) {
+
 }
 #endif //TREE_MOSKANOVA_TREE_H
