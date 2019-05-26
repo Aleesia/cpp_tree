@@ -38,13 +38,15 @@ void create_tree()
     str_child_12.add_right_child(&str_child_32);
 
     str_root.output();
+
+    str_root.show_adjacency_matrix(9);
 }
 
 int main()
 {
-    BinaryTreeNode<long long int> my_node(2020202020), node2(1020205060), node3(4040404040), node4(3030303030), node7(7070707070), node8(8080808080), node9(9090909090), node10(9998341734);
-    auto *new_node = new BinaryTreeNode<long long int>(293482457);
-    BinaryTreeNode<long long int> node100(1000000000), node11(1234567890), node12(1234567890);
+    BinaryTreeNode<long long int> my_node(20202020), node2(10205060), node3(40404040), node4(30303030), node7(70707070), node8(80808080), node9(90909090), node10(99341734);
+    auto *new_node = new BinaryTreeNode<long long int>(2982457);
+    BinaryTreeNode<long long int> node100(10000000), node11(12567890), node12(12347890);
 
 
     my_node.add_right_child(new_node);
@@ -61,6 +63,7 @@ int main()
     new_node->add_left_child(&node12);
 
     std::cout<<"depth: "<<my_node.get_depth()<<std::endl;
+    my_node.show_adjacency_matrix();
     std::cout<<"\n\n";
 
     my_node.output();

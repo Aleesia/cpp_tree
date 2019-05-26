@@ -1,7 +1,3 @@
-//
-// Created by olga on 26.03.19.
-//
-
 #ifndef TREE_MOSKANOVA_BINARYTREE_H
 #define TREE_MOSKANOVA_BINARYTREE_H
 
@@ -12,13 +8,8 @@
 #include<cmath>
 #include<iomanip>
 
+#define WIDTH 9
 #define TEN "          "
-
-#define PROBIL 5
-#define TEXT 10
-
-#define BINARY_NUMBER 10
-
 
 template<typename nodeType>
 class BinaryTreeNode{
@@ -27,11 +18,14 @@ private:
     BinaryTreeNode *parent;
     BinaryTreeNode *right;
     BinaryTreeNode *left;
+
     int get_width();
     unsigned recursive_get_depth(unsigned cur);
     bool is_in_tree(BinaryTreeNode<nodeType> *other);
     bool is_the_same(BinaryTreeNode<nodeType> *other);
     void output_level(unsigned total_depth, unsigned cur_level, BinaryTreeNode<nodeType> **the_children);
+    BinaryTreeNode<nodeType>* recursive_copy_left_subtree(BinaryTreeNode<nodeType>* copy_of_parent);
+    BinaryTreeNode<nodeType>* recursive_copy_right_subtree(BinaryTreeNode<nodeType>* copy_of_parent);
 public:
     explicit BinaryTreeNode(nodeType node_data);
     BinaryTreeNode();
@@ -46,6 +40,8 @@ public:
     BinaryTreeNode<nodeType>* get_left_child();
     BinaryTreeNode<nodeType>* get_right_child();
     BinaryTreeNode<nodeType>** get_children();
+    unsigned get_number_of_all_children();
+    BinaryTreeNode<nodeType>** get_all_children_and_this();
 
     // DATA ops
     void set_data(nodeType new_data);
@@ -61,13 +57,17 @@ public:
     nodeType* get_parents_data();
     unsigned get_number_of_parents();
 
-
     //DEPTH
     unsigned get_depth();                      // how many nodes are under this node
     unsigned get_tree_depth();                 // depth of the whole tree
 
+    //OUTPUT
     void output();
 
+    //TO DO TO DO TO DO TO DO TO DO....
+    void show_adjacency_matrix(unsigned w=WIDTH);
+    BinaryTreeNode<nodeType>* create_random_tree(unsigned max_depth=10);
+    void remove_child();
     BinaryTreeNode<nodeType> *copy();
     BinaryTreeNode<nodeType> *copy_subtree();
 };
@@ -112,7 +112,7 @@ BinaryTreeNode<nodeType>::BinaryTreeNode(const BinaryTreeNode<nodeType> &node)
 template<typename nodeType>
 BinaryTreeNode<nodeType>::~BinaryTreeNode<nodeType>()
 {
-    
+    // i doubt if there is any need for the destructor
 }
 
 //======================= CHILDREN OPS ===========================
@@ -394,7 +394,6 @@ int BinaryTreeNode<nodeType>::get_width()
     return rezult;
 }
 
-
 std::string my_string(unsigned n, char symbol)
 {
     std::string rez="";
@@ -496,22 +495,6 @@ void BinaryTreeNode<nodeType>::output_level(unsigned total_depth, unsigned cur_l
     std::cout<<std::endl;
 }
 
-/* i tried to make output like this:
-                                                                                                    __________________________________________________________________________________________1234567890__________________________________________________________________________________________
-                                                                                                   /                                                                                                                                                                                              \
-                                                    __________________________________________1234567890__________________________________________                                                                                                 __________________________________________1234567890__________________________________________
-                                                   /                                                                                              \                                                                                               /                                                                                              \
-                           __________________1234567890__________________                                                  __________________1234567890__________________                                                  __________________1234567890__________________                                                  __________________1234567890__________________
-                          /                                              \                                                /                                              \                                                /                                              \                                                /                                              \
-              ______1234567890______                          ______1234567890______                          ______1234567890______                          ______1234567890______                          ______1234567890______                          ______1234567890______                          ______1234567890______                          ______1234567890______
-             /                      \                        /                      \                        /                      \                        /                      \                        /                      \                        /                      \                        /                      \                        /                      \
-       1234567890              1234567890              1234567890              1234567890              1234567890              1234567890              1234567890              1234567890              1234567890              1234567890              1234567890              1234567890              1234567890              1234567890              1234567890              1234567890
-      /          \            /          \            /          \            /          \            /          \            /          \            /          \            /          \
-1234567890  1234567890  1234567890  1234567890  1234567890  1234567890  1234567890  123456790  1234567890  1234567890  1234567890  1234567890  1234567890  1234567890  1234567890  123456790
-
-
-*/
-
 template<typename nodeType>
 void BinaryTreeNode<nodeType>::output()
 {
@@ -555,17 +538,181 @@ void BinaryTreeNode<nodeType>::output()
     }
 }
 
+template<typename nodeType>
+unsigned BinaryTreeNode<nodeType>::get_number_of_all_children()
+{
+    unsigned n1=0;
+    if (left!=nullptr && right!=nullptr) {return 2+left->get_number_of_all_children()+right->get_number_of_all_children();}
+    else if (right!=nullptr){return 1+right->get_number_of_all_children();}
+    else if (left!=nullptr){return 1+left->get_number_of_all_children();}
+    else {return 0;}
+}
+
+template<typename nodeType>
+BinaryTreeNode<nodeType>** BinaryTreeNode<nodeType>::get_all_children_and_this()
+{
+    unsigned num = get_number_of_all_children();
+    BinaryTreeNode<nodeType>** all_children = new BinaryTreeNode<nodeType>* [num+1];
+    BinaryTreeNode<nodeType>** next_1 = new BinaryTreeNode<nodeType>* [num+1];
+    BinaryTreeNode<nodeType>** next_2 = new BinaryTreeNode<nodeType>* [num+1];
+    BinaryTreeNode* root = this->copy_subtree();
+    all_children[0]=root;
+    unsigned f=0, counter=1, k, l, n1=0, n2=0;
+    if (root->left!=nullptr)
+    {
+        next_1[n1]=root->left;
+        n1++;
+    }
+    if (root->right!=nullptr)
+    {
+        next_1[n1]=right;
+        n1++;
+    }
+    while (counter<num+1)
+    {
+        n2=0;
+        for (k=0; k<n1; k++)
+        {
+            all_children[counter]=next_1[k];
+            counter++;
+            if (next_1[k]->left!=nullptr) {next_2[n2]=next_1[k]->left; n2++;}
+            if (next_1[k]->right!=nullptr) {next_2[n2]=next_1[k]->right; n2++;}
+        }
+        n1=0;
+        for (k=0; k<n2; k++)
+        {
+            all_children[counter]=next_2[k];
+            counter++;
+            if (next_2[k]->left!=nullptr) {next_1[n1]=next_2[k]->left; n1++;}
+            if (next_2[k]->right!=nullptr) {next_1[n1]=next_2[k]->right; n1++;}
+        }
+    }
+    return all_children;
+}
+
+template<typename nodeType>
+void BinaryTreeNode<nodeType>::show_adjacency_matrix(unsigned w)
+{
+    unsigned num = get_number_of_all_children()+1;
+    auto **pointers = new BinaryTreeNode<nodeType>*[num];
+    pointers = get_all_children_and_this();
+    std::cout<<std::setw(w)<<std::setfill(' ')<<"";
+    if (typeid(nodeType).name() == typeid(std::string).name())
+    {
+        std::string great_data;
+        for (unsigned k=0; k<num; k++){
+            great_data = pointers[k]->get_data();
+            if (great_data.length()>w-1)
+            {
+                std::cout<<' ';
+                for (unsigned q=0; q<w-1; q++) {std::cout<<great_data[q];}
+            }
+            else
+            {
+                for (unsigned q=great_data.length(); q<w; q++)
+                {std::cout<<' ';}
+                std::cout<<great_data;
+            }
+        }
+    }
+    else
+    {
+        for (unsigned k=0; k<num; k++){
+            std::cout<<std::setw(w)<<std::setfill(' ')<<pointers[k]->get_data();}
+    }
+
+    std::cout<<'\n';
+    for (unsigned i=0; i<num; i++)
+    {
+        if (typeid(nodeType).name() == typeid(std::string).name())
+        {
+            std::string great_data;
+            great_data = pointers[i]->get_data();
+            unsigned l = great_data.length();
+            if (l>w-1)
+            {
+                std::cout<<' ';
+                for (unsigned q=0; q<w-1; q++) {std::cout<<great_data[q];}
+
+            }
+            else
+            {
+                for (unsigned q=l; q<w; q++)
+                {std::cout<<' ';}
+                std::cout<<great_data;
+            }
+        }
+        else
+        {
+            std::cout<<std::setw(w)<<std::setfill(' ')<<pointers[i]->data;
+        }
+        for (unsigned j=0; j<num; j++)
+        {
+            if (pointers[i]->parent==pointers[j]){
+                std::cout<<std::setw(w)<<std::setfill(' ')<<1;}
+            else{
+                std::cout<<std::setw(w)<<std::setfill(' ')<<0;}
+        }
+        std::cout<<std::endl;
+    }
+}
+
 //=========================== COPY ==============================
 template<typename nodeType>
 BinaryTreeNode<nodeType> *BinaryTreeNode<nodeType>::copy()
 {
-    
+    BinaryTreeNode<nodeType>* new_node = new BinaryTreeNode<nodeType>(this->data);
+    return new_node;
+}
+
+template<typename nodeType>
+BinaryTreeNode<nodeType>* BinaryTreeNode<nodeType>::recursive_copy_left_subtree(BinaryTreeNode<nodeType>* copy_of_parent)
+{
+    auto *the_copy = new BinaryTreeNode<nodeType>;
+    the_copy = this->copy();
+    copy_of_parent->add_left_child(the_copy);
+    if (this->left!=nullptr)
+    {
+        the_copy->left = this->left->recursive_copy_left_subtree(the_copy);
+    }
+    if (this->right!=nullptr)
+    {
+        the_copy->right = this->right->recursive_copy_right_subtree(the_copy);
+    }
+    return the_copy;
+}
+
+template<typename nodeType>
+BinaryTreeNode<nodeType>* BinaryTreeNode<nodeType>::recursive_copy_right_subtree(BinaryTreeNode<nodeType>* copy_of_parent)
+{
+    auto *the_copy = new BinaryTreeNode<nodeType>;
+    the_copy = this->copy();
+    copy_of_parent->add_right_child(the_copy);
+    if (this->left!=nullptr)
+    {
+        the_copy->left = this->left->recursive_copy_left_subtree(the_copy);
+    }
+    if (this->right!=nullptr)
+    {
+        the_copy->right = this->right->recursive_copy_right_subtree(the_copy);
+    }
+    return the_copy;
 }
 
 template<typename nodeType>
 BinaryTreeNode<nodeType> *BinaryTreeNode<nodeType>::copy_subtree()
 {
-    
+    auto *new_root = new BinaryTreeNode<nodeType>;
+    new_root = this->copy();
+    if (left!=nullptr)
+    {
+        new_root->left = left->recursive_copy_left_subtree(new_root);
+    }
+    if (right!=nullptr)
+    {
+        new_root->right = right->recursive_copy_right_subtree(new_root);
+    }
+    return new_root;
 }
 
 // ===========================  ===============================
@@ -591,7 +738,5 @@ bool BinaryTreeNode<nodeType>::is_in_tree(BinaryTreeNode<nodeType> *other)
 
     return (this->get_root()->is_the_same(other->get_root()));
 }
-
-
 
 #endif //TREE_MOSKANOVA_BINARYTREE_H

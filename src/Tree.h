@@ -23,24 +23,24 @@ private:
     unsigned number_of_children;
 
     static char output_str[STR_LEN];
+
     TreeNode<nodeType>* recursive_copy_subtree(TreeNode<nodeType> *copy_of_parent_node); //alisa func
     unsigned recursive_get_depth(unsigned cur);
-
     bool is_in_tree(TreeNode<nodeType> *other);
     bool is_the_same(TreeNode<nodeType> *other);
 
-    unsigned get_number_of_all_children();
 protected:
     // this is hidden recursion
     void show_adjacency_list(bool root);
     void show_adjacency_list(bool root, const char* filename);
 public:
     explicit TreeNode(nodeType node_data);
-
     explicit TreeNode(TreeNode<nodeType> *node, bool child_free = false, bool save_parent = false);
-
     TreeNode();
     ~TreeNode();
+
+    TreeNode<nodeType> *copy();
+    TreeNode<nodeType> *copy_subtree();
 
     // Node data ops
     nodeType get_data();
@@ -49,8 +49,27 @@ public:
     // Parent ops
     TreeNode* get_parent();
     void set_parent(const TreeNode<nodeType> &new_parent);
+    TreeNode** get_parents(); // full list of parents
+    nodeType get_parent_data();
+    nodeType* get_parents_data();
+    unsigned get_number_of_parents();
 
-    void del_parent();
+    // root
+    TreeNode* get_root();
+
+    //depth
+    unsigned get_depth();
+    unsigned get_tree_depth();
+
+    //children
+    unsigned get_number_of_all_children();
+    void add_child(const TreeNode<nodeType> &child);
+    void add_child(TreeNode<nodeType> *child);
+    nodeType *get_children_data();
+    unsigned get_number_of_children();
+    TreeNode<nodeType>** get_children();
+    TreeNode<nodeType>** get_all_children_and_this();
+    void remove_child(TreeNode<nodeType> *child);            //doesn't delete the child
 
     //OUTPUT SECTION
     // for (sub)tree
@@ -58,42 +77,14 @@ public:
     void show_adjacency_matrix(char *filename);
     void show_adjacency_list(); // console
     void show_adjacency_list(const char *filename);
+    void output();
     // for node only
     template <typename NodeType>
     friend std::ostream &operator<<(std::ostream &cout, TreeNode<NodeType> *node);
 
-    TreeNode** get_parents(); // full list of parents
-    nodeType get_parent_data();
-    nodeType* get_parents_data();
-    unsigned get_number_of_parents();
-
-    unsigned get_depth();
-    unsigned get_tree_depth();
-
-    TreeNode* get_root();
-
-    // Children ops
-    void add_child(const TreeNode<nodeType> &child);
-    void add_child(TreeNode<nodeType> *child);
-    nodeType *get_children_data();
-    unsigned get_number_of_children();
-
-    TreeNode<nodeType>** get_children();
-
-    TreeNode<nodeType>** get_all_children_and_this();
-
-    void output();
-    void remove_child(TreeNode<nodeType> *child);            //doesn't delete the child
-
-    TreeNode<nodeType> *copy();
-    TreeNode<nodeType> *copy_subtree();
+    TreeNode<nodeType>* create_random_tree(unsigned max_depth=10, unsigned max_num_of_children=10);
 
     void delete_this_node(); //this node's children will become it's parent's children
-
-    // Show section
-
-    //    void show(); // shows node data & stuff
-
 };
 
 template<typename nodeType>

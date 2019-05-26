@@ -49,6 +49,8 @@ void create_projects_prefix_tree() {
     std::cout<<"copy_projects: "<<std::endl;
     copy_projects->output();
     std::cout << "depth of the projects_C tree: " << copy_projects->get_depth() << std::endl;
+
+    str_root.show_adjacency_matrix();
 }
 
 
@@ -62,6 +64,8 @@ void create_projects_prefix_tree() {
     child_1->add_child(&ch5);
 
     my_root.output();
+    my_root.remove_child(child_1);
+    my_root.output();
 
-    create_projects_prefix_tree();
+    //create_projects_prefix_tree();
 }
