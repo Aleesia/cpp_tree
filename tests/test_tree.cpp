@@ -44,10 +44,16 @@ void create_projects_tree()
     str_child_12.add_child(&str_child_33);
     str_child_12.add_child(&str_child_34);
     str_root.output();
+    std::cout<<"depth of the projects tree: "<<str_root.get_depth()<<std::endl;
     std::cout<<std::endl;
+
+    str_root.show_adjacency_matrix();
 
     auto *copy_projects = str_child_11.copy_subtree();
     copy_projects->output();
+    std::cout<<"depth of the projects_C tree: "<<copy_projects->get_depth()<<std::endl;
+
+
 }
 
 int main()
@@ -56,6 +62,9 @@ int main()
     TreeNode<float> ch(1);
     root->add_child(&ch);
     TreeNode<float> ch_1(22);
+    std::cout<<"======";
+    std::cout<<root;
+    //std::cout<<ch_1;
     ch.add_child(&ch_1);
     TreeNode<float> ch_3(44);
     TreeNode<float> ch_5(55);
@@ -68,19 +77,23 @@ int main()
     new_tree->add_child(&left_1);
     TreeNode<float> middle(33);
     new_tree->add_child(&middle);
+    middle.add_child(new_tree);
     new_tree->output();
 
     std::cout<<"\n\n";
     //create_projects_tree();
-     TreeNode<float> *test_node = new TreeNode<float>(4567);
-     test_node = root->copy();
+    TreeNode<float> *test_node = new TreeNode<float>(4567);
+    test_node = root->copy();
 
-     new_tree->output();
-     std::cout<<std::endl;
-
-     test_node = root->copy_subtree();
-     test_node->output();
-     std:cout<<std::endl;
-
-     create_projects_tree();
+    new_tree->output();
+    std::cout<<std::endl;
+    test_node = root->copy_subtree();
+    //test_node->output();
+    std:cout<<"depth of root"<<root->get_depth()<<std::endl;
+    middle.add_child(new_tree);
+    create_projects_tree();
+    new_tree->output();
+    std::cout<<"\n====================================================================\n";
+    new_tree->show_adjacency_matrix();
+    new_tree->output();
 }
