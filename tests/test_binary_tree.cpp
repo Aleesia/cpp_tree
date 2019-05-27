@@ -91,4 +91,6 @@ int main()
     std::cout<<std::endl;
     nnn = my_favourite_node->create_random_tree(10);
     nnn->show_adjacency_matrix(10);
+
+    std::cout<<&root;
 }

@@ -31,7 +31,10 @@ private:
     void output_level(ntype total_depth, ntype cur_level, BinaryTreeNode<nodeType> **the_children);
     BinaryTreeNode<nodeType>* recursive_copy_left_subtree(BinaryTreeNode<nodeType>* copy_of_parent);
     BinaryTreeNode<nodeType>* recursive_copy_right_subtree(BinaryTreeNode<nodeType>* copy_of_parent);
-
+protected:
+    // this is hidden recursion
+    void show_adjacency_list(bool root);
+    void show_adjacency_list(bool root, const char* filename);
 public:
     explicit BinaryTreeNode(nodeType node_data);
     BinaryTreeNode();
@@ -72,6 +75,11 @@ public:
     //OUTPUT
     void output();
     void show_adjacency_matrix(ntype w=WIDTH);
+    void show_adjacency_list(); // console
+    void show_adjacency_list(const char* filename);
+    // for node only
+    template <typename NodeType>
+    friend std::ostream &operator<<(std::ostream &cout, BinaryTreeNode<NodeType> *node);
 
     BinaryTreeNode<nodeType> *copy();
     BinaryTreeNode<nodeType> *copy_subtree();
@@ -445,6 +453,30 @@ ntype BinaryTreeNode<nodeType>::get_tree_depth()
 }
 
 //========================= OUTPUT =================================
+template <typename NodeType>
+std::ostream &operator<<(std::ostream &cout, BinaryTreeNode<NodeType> *node)
+{
+    cout << "node " << node->data << "\n"<< "parent node ";
+    if (node->parent == nullptr){
+        cout << "does not exist";
+    } else  {
+        cout << node->parent->data;
+    }
+    cout << "\n" << "left child: ";
+    if (node->left == nullptr) {
+        cout << "does not exist";
+    } else {
+        cout << node->left->data;
+    }
+    cout << "\n" << "right child: ";
+    if (node->right == nullptr) {
+        cout << "does not exist";
+    } else {
+        cout << node->right->data;
+    }
+    return cout;
+}
+
 template<typename nodeType>
 ntype BinaryTreeNode<nodeType>::get_width()
 {
@@ -718,6 +750,54 @@ void BinaryTreeNode<nodeType>::show_adjacency_matrix(ntype w)
     }
 }
 
+template<typename nodeType>
+void BinaryTreeNode<nodeType>::show_adjacency_list(bool root)
+{
+    // for this node
+    if (root) {
+        std::cout << data << ": (";
+    } else {
+        std::cout << data << ": ("
+                  << parent->data << ", ";
+    }
+    if (left!=nullptr)
+    {
+        std::cout<<left->get_data()<<", ";
+    }
+    if (right!=nullptr)
+    {
+        std::cout<<right->get_data()<<", ";
+    }
+    std::cout << ")" << std::endl;
+    // for children
+    if (left!=nullptr)
+    {
+        left->show_adjacency_list(false);
+    }
+    if (right!=nullptr)
+    {
+        right->show_adjacency_list(false);
+    }
+}
+
+template<typename nodeType>
+void BinaryTreeNode<nodeType>::show_adjacency_list(bool root, const char* filename)
+{
+    
+}
+
+template<typename nodeType>
+void BinaryTreeNode<nodeType>::show_adjacency_list()
+{
+    show_adjacency_list(true);
+}
+
+template<typename nodeType>
+void BinaryTreeNode<nodeType>::show_adjacency_list(const char* filename)
+{
+    show_adjacency_list(true, filename);
+}
+
 //=========================== COPY ==============================
 template<typename nodeType>
 BinaryTreeNode<nodeType> *BinaryTreeNode<nodeType>::copy()
@@ -776,7 +856,7 @@ BinaryTreeNode<nodeType> *BinaryTreeNode<nodeType>::copy_subtree()
     return new_root;
 }
 
-// ===========================  ===============================
+// =========================== OTHER ===============================
 template<typename nodeType>
 BinaryTreeNode<nodeType>* BinaryTreeNode<nodeType>::get_root()
 {
@@ -830,6 +910,7 @@ BinaryTreeNode<nodeType>* BinaryTreeNode<nodeType>::create_random_tree(ntype max
     std::cout<<"the_depth = "<<the_depth<<std::endl;
     auto *rand_root = new BinaryTreeNode<nodeType>;
     rand_root->data = (nodeType)rand();
+    rand_root->parent=nullptr;
     if (the_depth)
     {
         ntype has_left_child = rand() % 2;

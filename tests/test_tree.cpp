@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Tree.h"
 #include<cstring>
+#define file_path "/C++ code/23_horrible_project/file.txt"
 
 using namespace std;
 void create_projects_tree()
@@ -48,6 +49,7 @@ void create_projects_tree()
     std::cout<<std::endl;
 
     str_root.show_adjacency_matrix();
+    str_root.show_adjacency_matrix("/C++ code/23_horrible_project/file.txt");
 
     auto *copy_projects = str_child_11.copy_subtree();
     copy_projects->output();
@@ -58,6 +60,7 @@ void create_projects_tree()
 
 int main()
 {
+    srand(time(0));
     auto *root = new TreeNode<float>(9.99);
     TreeNode<float> ch(1);
     root->add_child(&ch);
@@ -81,14 +84,14 @@ int main()
     new_tree->output();
 
     std::cout<<"\n\n";
-    //create_projects_tree();
-    TreeNode<float> *test_node = new TreeNode<float>(4567);
+    create_projects_tree();
+    auto *test_node = new TreeNode<float>(4567);
     test_node = root->copy();
 
     new_tree->output();
     std::cout<<std::endl;
     test_node = root->copy_subtree();
-    //test_node->output();
+    test_node->output();
     std:cout<<"depth of root"<<root->get_depth()<<std::endl;
     middle.add_child(new_tree);
     create_projects_tree();
@@ -96,4 +99,13 @@ int main()
     std::cout<<"\n====================================================================\n";
     new_tree->show_adjacency_matrix();
     new_tree->output();
+    new_tree->show_adjacency_list();
+
+    TreeNode<float> *f, *g;
+    f = g->create_random_tree(7, 5);
+    f->output();
+    std::cout<<"\n\n=============================================================\n";
+
+    f->show_adjacency_list(file_path);
+    f->show_adjacency_matrix(file_path);
 }

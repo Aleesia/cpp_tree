@@ -1,6 +1,34 @@
 #include"PrefixTree.h"
+#include<iostream>
+#define file_path "/C++ code/23_horrible_project/file.txt"
 
 void create_projects_prefix_tree() {
+
+}
+
+
+int main()
+{
+    srand(time(nullptr));
+    PrefixTreeNode<int> my_root, ch2(22, 4), ch3(90, 56), ch5(7,5);
+    auto *child_1 = new PrefixTreeNode<int>(999, 77);
+    my_root.add_child(child_1);
+    my_root.add_child(&ch2);
+    my_root.add_child(&ch3);
+    child_1->add_child(&ch5);
+
+    my_root.output();
+    my_root.remove_child(child_1);
+    my_root.output();
+    std::cout<<&my_root;
+
+    PrefixTreeNode<float> * root, *r1;
+    root = r1->create_random_tree();
+    root->output();
+    root->show_adjacency_list(file_path);
+
+    create_projects_prefix_tree();
+
     PrefixTreeNode <std::string> str_root("project", 89);
     PrefixTreeNode <std::string> str_child_11("project_C", 3);
     PrefixTreeNode <std::string> str_child_12("project_C++", 90);
@@ -51,21 +79,8 @@ void create_projects_prefix_tree() {
     std::cout << "depth of the projects_C tree: " << copy_projects->get_depth() << std::endl;
 
     str_root.show_adjacency_matrix();
-}
+    str_root.show_adjacency_list();
 
-
-int main()
-{
-    PrefixTreeNode<int> my_root, ch2(22, 4), ch3(90, 56), ch5(7,5);
-    PrefixTreeNode<int> *child_1 = new PrefixTreeNode<int>(999, 77);
-    my_root.add_child(child_1);
-    my_root.add_child(&ch2);
-    my_root.add_child(&ch3);
-    child_1->add_child(&ch5);
-
-    my_root.output();
-    my_root.remove_child(child_1);
-    my_root.output();
-
-    //create_projects_prefix_tree();
+    str_root.show_adjacency_matrix(file_path);
+    str_root.show_adjacency_list(file_path);
 }
