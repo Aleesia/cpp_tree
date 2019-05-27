@@ -783,7 +783,7 @@ void BinaryTreeNode<nodeType>::show_adjacency_list(bool root)
 template<typename nodeType>
 void BinaryTreeNode<nodeType>::show_adjacency_list(bool root, const char* filename)
 {
-    
+
 }
 
 template<typename nodeType>
