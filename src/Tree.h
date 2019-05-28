@@ -134,7 +134,6 @@ TreeNode<nodeType>::TreeNode(TreeNode<nodeType> *node, bool child_free, bool sav
     {
         parent=nullptr;
     }
-
     if (child_free || node->number_of_children == 0)
     {
         number_of_children = 0;
@@ -450,10 +449,10 @@ ntype TreeNode<nodeType>::get_number_of_all_children()
 template<typename nodeType>
 TreeNode<nodeType>** TreeNode<nodeType>::get_all_children_and_this()
 {
-    ntype number=get_number_of_all_children();
-    TreeNode<nodeType> **the_list = new TreeNode<nodeType>* [number+1];
-    TreeNode<nodeType> **next_1 = new TreeNode<nodeType>* [number+1];
-    TreeNode<nodeType> **next_2 = new TreeNode<nodeType>* [number+1];
+    ntype number=get_number_of_all_children()+1;
+    TreeNode<nodeType> **the_list = new TreeNode<nodeType>* [number];
+    TreeNode<nodeType> **next_1 = new TreeNode<nodeType>* [number];
+    TreeNode<nodeType> **next_2 = new TreeNode<nodeType>* [number];
     ntype i, j, k, counter=1;
     for (i=0; i<number; i++)
     {
@@ -468,8 +467,9 @@ TreeNode<nodeType>** TreeNode<nodeType>::get_all_children_and_this()
     while (counter<number)
     {
         ntype f=0;
+        j=0;
 
-        for (j=0; j<next_1_cur_num; j++)
+        while(j<next_1_cur_num && counter<number)
         {
             the_list[counter]=next_1[j];
             counter++;
@@ -480,10 +480,12 @@ TreeNode<nodeType>** TreeNode<nodeType>::get_all_children_and_this()
             }
             next_2_cur_num+=next_1[j]->get_number_of_children();
             std::cout<<"next_2_cur_num = "<<next_2_cur_num<<std::endl;
+            j++;
         }
         f=0;
         next_1_cur_num=0;
-        for (j=0; j<next_2_cur_num; j++)
+        j=0;
+        while (j<next_2_cur_num && counter<number)
         {
             the_list[counter] = next_2[j];
             counter++;
@@ -493,7 +495,7 @@ TreeNode<nodeType>** TreeNode<nodeType>::get_all_children_and_this()
                 f++;
             }
             next_1_cur_num+=next_2[j]->get_number_of_children();
-
+            j++;
             std::cout<<"  ===next_1_cur_num = "<<next_1_cur_num<<std::endl;
         }
     }
